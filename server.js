@@ -31,7 +31,7 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 // Database Connection
-const mongoURI = 'mongodb://127.0.0.1:27017/OnePiece'; // Change 'one piece' if you want
+const mongoURI = 'mongodb://10.9.9.28:27017/OnePiece'; // Change 'one piece' if you want
 mongoose.connect(mongoURI);
 
 const connection = mongoose.connection;

@@ -801,6 +801,16 @@
     let allEpisodes = [];
     let currentAnimeId = null;
 
+    function getAnimeIdFromEpisode(ep) {
+      if (!ep || !ep.animeId) return null;
+      if (typeof ep.animeId === 'string') return ep.animeId;
+      return ep.animeId._id || null;
+    }
+
+    function getAnimeId(anime) {
+      return anime && anime._id ? anime._id : null;
+    }
+
     // Load Dashboard
     async function loadDashboard() {
       spinner.style.display = 'block';
@@ -813,11 +823,11 @@
       try {
         // Load anime series
         const animeRes = await fetch(`${API_BASE}/api/anime`);
-        allAnime = await animeRes.json();
+        allAnime = (await animeRes.json()).filter(Boolean);
 
         // Load all episodes
         const episodesRes = await fetch(`${API_BASE}/api/episodes`);
-        allEpisodes = await episodesRes.json();
+        allEpisodes = (await episodesRes.json()).filter(Boolean);
 
         spinner.style.display = 'none';
 
@@ -855,22 +865,24 @@
       animeGrid.innerHTML = '';
 
       allAnime.forEach(anime => {
-        const episodes = allEpisodes.filter(ep => {
-          if (!ep.animeId) return false;
-          return ep.animeId._id === anime._id || ep.animeId === anime._id;
-        });
+        const animeId = getAnimeId(anime);
+        if (!animeId) return;
+
+        const episodes = allEpisodes.filter(ep => getAnimeIdFromEpisode(ep) === animeId);
         const card = createAnimeCard(anime, episodes);
         animeGrid.appendChild(card);
       });
 
       // Show featured if we have anime
       if (allAnime.length > 0 && allEpisodes.length > 0) {
-        const latestEpisode = allEpisodes.sort((a, b) => 
+        const latestEpisode = [...allEpisodes].sort((a, b) => 
           new Date(b.uploadedAt) - new Date(a.uploadedAt)
         )[0];
         const featuredAnime = allAnime.find(a => {
-          if (!latestEpisode.animeId) return false;
-          return a._id === latestEpisode.animeId._id || a._id === latestEpisode.animeId;
+          const latestAnimeId = getAnimeIdFromEpisode(latestEpisode);
+          const aId = getAnimeId(a);
+          if (!latestAnimeId || !aId) return false;
+          return aId === latestAnimeId;
         });
         if (featuredAnime) {
           showFeaturedAnime(featuredAnime, latestEpisode);
@@ -880,7 +892,10 @@
 
     // Show Featured Anime
     function showFeaturedAnime(anime, latestEpisode) {
-      const episodeCount = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id).length;
+      const animeId = getAnimeId(anime);
+      const episodeCount = animeId
+        ? allEpisodes.filter(ep => getAnimeIdFromEpisode(ep) === animeId).length
+        : 0;
       
       featuredSection.innerHTML = `
         <div class="featured-video">
@@ -900,7 +915,7 @@
               <div style="margin-bottom: 1rem; color: var(--text-muted);">
                 <i class="fas fa-film"></i> ${episodeCount} Episodes Available
               </div>
-              <button class="watch-btn" onclick="viewAnimeDetail('${anime._id}')">
+              <button class="watch-btn" onclick="viewAnimeDetail('${animeId || ''}')">
                 <i class="fas fa-play"></i>
                 Watch Now
               </button>
@@ -914,7 +929,10 @@
     function createAnimeCard(anime, episodes) {
       const card = document.createElement('div');
       card.className = 'video-card';
-      card.onclick = () => viewAnimeDetail(anime._id);
+      const animeId = getAnimeId(anime);
+      card.onclick = () => {
+        if (animeId) viewAnimeDetail(animeId);
+      };
 
       const latestEpisode = episodes.sort((a, b) => b.episodeNumber - a.episodeNumber)[0];
 
@@ -959,8 +977,8 @@
       spinner.style.display = 'block';
 
       try {
-        const anime = allAnime.find(a => a._id === animeId);
-        const episodes = allEpisodes.filter(ep => ep.animeId._id === animeId || ep.animeId === animeId)
+        const anime = allAnime.find(a => getAnimeId(a) === animeId);
+        const episodes = allEpisodes.filter(ep => getAnimeIdFromEpisode(ep) === animeId)
           .sort((a, b) => a.episodeNumber - b.episodeNumber);
 
         spinner.style.display = 'none';
@@ -976,13 +994,13 @@
                 }
               </div>
               <div class="featured-info">
-                <h3 class="featured-title">${anime.title}</h3>
-                ${anime.description ? `<p class="featured-description">${anime.description}</p>` : ''}
+                <h3 class="featured-title">${anime ? anime.title : 'Anime'}</h3>
+                ${anime && anime.description ? `<p class="featured-description">${anime.description}</p>` : ''}
                 <div style="margin-bottom: 1rem; color: var(--text-muted);">
                   <i class="fas fa-film"></i> ${episodes.length} Episodes Available
                 </div>
                 ${episodes.length > 0 ? `
-                  <button class="watch-btn" onclick="openModal('${episodes[0].filename}', '${anime.title} - Episode ${episodes[0].episodeNumber}')">
+                  <button class="watch-btn" onclick="openModal('${episodes[0].filename}', '${(anime && anime.title) ? anime.title : 'Anime'} - Episode ${episodes[0].episodeNumber}')">
                     <i class="fas fa-play"></i>
                     Start Watching
                   </button>
@@ -1000,7 +1018,7 @@
         } else {
           episodeList.className = 'episode-list-container';
           episodes.forEach(episode => {
-            const episodeCard = createEpisodeCard(episode, anime.title);
+            const episodeCard = createEpisodeCard(episode, anime ? anime.title : 'Anime');
             episodeList.appendChild(episodeCard);
           });
         }
@@ -1117,26 +1135,26 @@
       } else {
         // Search in both anime titles and episode titles
         const filteredAnime = allAnime.filter(anime => 
-          anime.title.toLowerCase().includes(searchTerm)
+          anime && anime.title && anime.title.toLowerCase().includes(searchTerm)
         );
         
         const filteredEpisodes = allEpisodes.filter(episode => 
-          episode.title.toLowerCase().includes(searchTerm)
+          episode && episode.title && episode.title.toLowerCase().includes(searchTerm)
         );
 
         if (currentAnimeId) {
           // If viewing specific anime, filter episodes
           const filtered = filteredEpisodes.filter(ep => 
-            ep.animeId._id === currentAnimeId || ep.animeId === currentAnimeId
+            getAnimeIdFromEpisode(ep) === currentAnimeId
           );
           episodeList.innerHTML = '';
           if (filtered.length === 0) {
             episodeList.innerHTML = '<div class="empty-state"><h3>No episodes found</h3></div>';
           } else {
             episodeList.className = 'episode-list-container';
-            const anime = allAnime.find(a => a._id === currentAnimeId);
+            const anime = allAnime.find(a => getAnimeId(a) === currentAnimeId);
             filtered.forEach(episode => {
-              const episodeCard = createEpisodeCard(episode, anime.title);
+              const episodeCard = createEpisodeCard(episode, anime ? anime.title : 'Anime');
               episodeList.appendChild(episodeCard);
             });
           }
@@ -1144,7 +1162,9 @@
           // Show filtered anime
           animeGrid.innerHTML = '';
           filteredAnime.forEach(anime => {
-            const episodes = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id);
+            const animeId = getAnimeId(anime);
+            if (!animeId) return;
+            const episodes = allEpisodes.filter(ep => getAnimeIdFromEpisode(ep) === animeId);
             const card = createAnimeCard(anime, episodes);
             animeGrid.appendChild(card);
           });
