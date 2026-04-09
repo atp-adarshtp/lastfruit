@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Piece Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #ff6b35;
+      --primary-dark: #e85d26;
+      --secondary: #004e89;
+      --dark: #0f172a;
+      --darker: #0a0f1d;
+      --card: #1e293b;
+      --card-hover: #273548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* Header */
+    .header {
+      background: var(--dark);
+      padding: 1.25rem 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    }
+
+    /* Stats Cards */
+    .stats-container {
+      max-width: 1400px;
+      margin: -2rem auto 2rem;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .stat-icon.blue {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+    }
+
+    .stat-icon.green {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .stat-icon.orange {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .stat-icon.red {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    /* Upload Area */
+    .upload-area {
+      background: var(--card);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: var(--card-hover);
+    }
+
+    .upload-area.dragover {
+      border-color: var(--primary);
+      background: rgba(255, 107, 53, 0.1);
+    }
+
+    .upload-icon {
+      font-size: 4rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    #videoInput {
+      display: none;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      display: none;
+      margin: 1.5rem 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    /* Video Grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .video-card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      border-color: var(--primary);
+    }
+
+    .video-wrapper {
+      position: relative;
+      background: var(--darker);
+      aspect-ratio: 16/9;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-info {
+      padding: 1.25rem;
+    }
+
+    .video-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .video-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--card);
+      border-left: 4px solid var(--success);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      gap: 1rem;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.error {
+      border-left-color: var(--danger);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1500;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-small {
+      max-width: 500px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: var(--card-hover);
+      color: var(--primary);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--darker);
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* Anime Series Card */
+    .anime-series-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .anime-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .anime-title-section h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+
+    .anime-description {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .anime-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #d97706;
+    }
+
+    /* Episode List */
+    .episode-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .episode-count {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .episode-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .episode-card {
+      background: var(--darker);
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .episode-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .episode-number {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .episode-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .episode-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .episode-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .spinner.show {
+      display: block;
+    }
+
+    .spinner i {
+      font-size: 3rem;
+      color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-skull-crossbones"></i>
+        <h1>Anime Admin Dashboard</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="showAddAnimeModal()">
+          <i class="fas fa-plus"></i> Add Anime Series
+        </button>
+        <button class="btn btn-primary" onclick="showUploadEpisodeModal()">
+          <i class="fas fa-upload"></i> Upload Episode
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-header">
+        <div>
+          <div class="stat-value" id="totalAnime">0</div>
+          <div class="stat-label">Anime Series</div>
+        </div>
+        <div class="stat-icon blue">
+          <i class="fas fa-tv"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <div>
+          <div class="stat-value" id="totalSize">0 MB</div>
+          <div class="stat-label">Storage Used</div>
+        </div>
+        <div class="stat-icon green">
+          <i class="fas fa-database"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <div>
+          <div class="stat-value" id="avgSize">0 MB</div>
+          <div class="stat-label">Avg. Video Size</div>
+        </div>
+        <div class="stat-icon orange">
+          <i class="fas fa-chart-line"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <div>
+          <div class="stat-value" id="lastUpload">-</div>
+          <div class="stat-label">Last Upload</div>
+        </div>
+        <div class="stat-icon red">
+          <i class="fas fa-clock"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="section-header">
+      <h2 class="section-title">Anime Series & Episodes</h2>
+      <button class="btn btn-primary" onclick="loadDashboard()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="spinner" id="spinner">
+      <i class="fas fa-spinner"></i>
+      <p>Loading dashboard...</p>
+    </div>
+
+    <!-- Anime Series Grid -->
+    <div id="animeList"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <i class="fas fa-tv"></i>
+      <h3>No anime series yet</h3>
+      <p>Add your first anime series to get started!</p>
+    </div>
+  </div>
+
+  <!-- Add Anime Modal -->
+  <div class="modal" id="addAnimeModal">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Anime Series</h3>
+        <button class="close-btn" onclick="closeAddAnimeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="addAnimeForm">
+          <div class="form-group">
+            <label>Anime Title *</label>
+            <input type="text" id="animeTitle" required placeholder="e.g., Naruto, One Piece">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="animeDescription" rows="3" placeholder="Brief description of the anime"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-plus"></i> Create Anime Series
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Episode Modal -->
+  <div class="modal" id="uploadEpisodeModal">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h3 class="modal-title">Upload Episode</h3>
+        <button class="close-btn" onclick="closeUploadEpisodeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="uploadEpisodeForm">
+          <div class="form-group">
+            <label>Select Anime Series *</label>
+            <select id="episodeAnimeId" required>
+              <option value="">-- Select Anime --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Episode Number *</label>
+            <input type="number" id="episodeNumber" required min="1" placeholder="e.g., 1, 2, 3">
+          </div>
+          <div class="form-group">
+            <label>Episode Title *</label>
+            <input type="text" id="episodeTitle" required placeholder="e.g., The Beginning">
+          </div>
+          <div class="form-group">
+            <label>Video File *</label>
+            <input type="file" id="episodeVideo" accept="video/*,.mkv" required>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Uploading... 0%</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="uploadBtn">
+            <i class="fas fa-upload"></i> Upload Episode
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Success!</span>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5000';
+    const spinner = document.getElementById('spinner');
+    const animeList = document.getElementById('animeList');
+    const emptyState = document.getElementById('emptyState');
+
+    let allAnime = [];
+    let allEpisodes = [];
+
+    // Load Dashboard
+    async function loadDashboard() {
+      spinner.style.display = 'block';
+      animeList.innerHTML = '';
+      emptyState.style.display = 'none';
+
+      try {
+        // Load anime series
+        const animeRes = await fetch(`${API_BASE}/api/anime`);
+        allAnime = await animeRes.json();
+
+        // Load all episodes
+        const episodesRes = await fetch(`${API_BASE}/api/episodes`);
+        allEpisodes = await episodesRes.json();
+
+        spinner.style.display = 'none';
+
+        if (allAnime.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          displayAnimeSeries();
+        }
+
+        updateStats();
+      } catch (error) {
+        console.error('Load error:', error);
+        showToast('Failed to load dashboard', true);
+        spinner.style.display = 'none';
+        emptyState.style.display = 'block';
+      }
+    }
+
+    // Display Anime Series
+    function displayAnimeSeries() {
+      animeList.innerHTML = '';
+
+      allAnime.forEach(anime => {
+        const episodes = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id);
+        const animeCard = createAnimeCard(anime, episodes);
+        animeList.appendChild(animeCard);
+      });
+    }
+
+    // Create Anime Card
+    function createAnimeCard(anime, episodes) {
+      const card = document.createElement('div');
+      card.className = 'anime-series-card';
+
+      const totalSize = episodes.reduce((sum, ep) => sum + ep.size, 0);
+      const totalMB = (totalSize / (1024 * 1024)).toFixed(2);
+
+      card.innerHTML = `
+        <div class="anime-header">
+          <div class="anime-title-section">
+            <h3><i class="fas fa-tv"></i> ${anime.title}</h3>
+            ${anime.description ? `<p class="anime-description">${anime.description}</p>` : ''}
+          </div>
+          <div class="anime-actions">
+            <button class="btn btn-sm btn-primary" onclick="showUploadEpisodeModal('${anime._id}')">
+              <i class="fas fa-plus"></i> Add Episode
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteAnime('${anime._id}', '${anime.title}')">
+              <i class="fas fa-trash"></i> Delete Series
+            </button>
+          </div>
+        </div>
+
+        <div class="episode-list-header">
+          <span class="episode-count">
+            <i class="fas fa-film"></i> ${episodes.length} Episode${episodes.length !== 1 ? 's' : ''} | ${totalMB} MB
+          </span>
+        </div>
+
+        ${episodes.length > 0 ? `
+          <div class="episode-grid">
+            ${episodes.map(ep => createEpisodeCard(ep)).join('')}
+          </div>
+        ` : '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No episodes yet. Add your first episode!</p>'}
+      `;
+
+      return card;
+    }
+
+    // Create Episode Card
+    function createEpisodeCard(episode) {
+      const sizeMB = (episode.size / (1024 * 1024)).toFixed(2);
+      const uploadDate = new Date(episode.uploadedAt).toLocaleDateString();
+
+      return `
+        <div class="episode-card">
+          <span class="episode-number">EP ${episode.episodeNumber}</span>
+          <div class="episode-title">${episode.title}</div>
+          <div class="episode-meta">
+            <span><i class="fas fa-hdd"></i> ${sizeMB} MB</span>
+            <span><i class="fas fa-calendar"></i> ${uploadDate}</span>
+          </div>
+          <div class="episode-actions">
+            <button class="btn btn-sm btn-success" onclick="playEpisode('${episode.filename}')">
+              <i class="fas fa-play"></i> Play
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteEpisode('${episode._id}', '${episode.title}')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Update Statistics
+    function updateStats() {
+      const totalEpisodes = allEpisodes.length;
+      const totalBytes = allEpisodes.reduce((sum, ep) => sum + ep.size, 0);
+      const totalMB = (totalBytes / (1024 * 1024)).toFixed(2);
+      const avgMB = totalEpisodes > 0 ? (totalMB / totalEpisodes).toFixed(2) : 0;
+
+      document.getElementById('totalAnime').textContent = allAnime.length;
+      document.getElementById('totalSize').textContent = `${totalMB} MB`;
+      document.getElementById('avgSize').textContent = `${avgMB} MB`;
+      
+      if (allEpisodes.length > 0) {
+        const lastEpisode = allEpisodes.sort((a, b) => 
+          new Date(b.uploadedAt) - new Date(a.uploadedAt)
+        )[0];
+        const lastDate = new Date(lastEpisode.uploadedAt);
+        document.getElementById('lastUpload').textContent = lastDate.toLocaleDateString();
+      } else {
+        document.getElementById('lastUpload').textContent = '-';
+      }
+    }
+
+    // Show Add Anime Modal
+    function showAddAnimeModal() {
+      document.getElementById('addAnimeModal').classList.add('active');
+    }
+
+    // Close Add Anime Modal
+    function closeAddAnimeModal() {
+      document.getElementById('addAnimeModal').classList.remove('active');
+      document.getElementById('addAnimeForm').reset();
+    }
+
+    // Show Upload Episode Modal
+    function showUploadEpisodeModal(preselectedAnimeId = null) {
+      const select = document.getElementById('episodeAnimeId');
+      select.innerHTML = '<option value="">-- Select Anime --</option>';
+      
+      allAnime.forEach(anime => {
+        const option = document.createElement('option');
+        option.value = anime._id;
+        option.textContent = anime.title;
+        select.appendChild(option);
+      });
+
+      if (preselectedAnimeId) {
+        select.value = preselectedAnimeId;
+      }
+
+      document.getElementById('uploadEpisodeModal').classList.add('active');
+    }
+
+    // Close Upload Episode Modal
+    function closeUploadEpisodeModal() {
+      document.getElementById('uploadEpisodeModal').classList.remove('active');
+      document.getElementById('uploadEpisodeForm').reset();
+      document.getElementById('progressContainer').style.display = 'none';
+    }
+
+    // Add Anime Form Submit
+    document.getElementById('addAnimeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('animeTitle').value;
+      const description = document.getElementById('animeDescription').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/anime`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description })
+        });
+
+        if (res.ok) {
+          showToast('Anime series created successfully!', false);
+          closeAddAnimeModal();
+          loadDashboard();
+        } else {
+          showToast('Failed to create anime series', true);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Failed to create anime series', true);
+      }
+    });
+
+    // Upload Episode Form Submit
+    document.getElementById('uploadEpisodeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const animeId = document.getElementById('episodeAnimeId').value;
+      const episodeNumber = document.getElementById('episodeNumber').value;
+      const title = document.getElementById('episodeTitle').value;
+      const videoFile = document.getElementById('episodeVideo').files[0];
+
+      if (!videoFile) {
+        showToast('Please select a video file', true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('video', videoFile);
+      formData.append('animeId', animeId);
+      formData.append('episodeNumber', episodeNumber);
+      formData.append('title', title);
+
+      const progressContainer = document.getElementById('progressContainer');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const uploadBtn = document.getElementById('uploadBtn');
+
+      progressContainer.style.display = 'block';
+      uploadBtn.disabled = true;
+
+      try {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = percentComplete + '%';
+            progressText.textContent = `Uploading... ${percentComplete}%`;
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status === 201) {
+            showToast('Episode uploaded successfully!', false);
+            progressContainer.style.display = 'none';
+            uploadBtn.disabled = false;
+            closeUploadEpisodeModal();
+            loadDashboard();
+          } else {
+            showToast('Upload failed. Please try again.', true);
+            progressContainer.style.display = 'none';
+            uploadBtn.disabled = false;
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          showToast('Upload failed. Please check your connection.', true);
+          progressContainer.style.display = 'none';
+          uploadBtn.disabled = false;
+        });
+
+        xhr.open('POST', `${API_BASE}/api/upload`);
+        xhr.send(formData);
+      } catch (error) {
+        console.error('Upload error:', error);
+        showToast('Upload failed.', true);
+        progressContainer.style.display = 'none';
+        uploadBtn.disabled = false;
+      }
+    });
+
+    // Play Episode
+    function playEpisode(filename) {
+      window.open(`${API_BASE}/video/${filename}`, '_blank');
+    }
+
+    // Delete Episode
+    async function deleteEpisode(id, title) {
+      if (!confirm(`Are you sure you want to delete "${title}"?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/episode/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          showToast('Episode deleted successfully', false);
+          loadDashboard();
+        } else {
+          showToast('Failed to delete episode', true);
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Failed to delete episode', true);
+      }
+    }
+
+    // Delete Anime
+    async function deleteAnime(id, title) {
+      if (!confirm(`Are you sure you want to delete "${title}" and ALL its episodes? This cannot be undone!`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/anime/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          showToast('Anime series deleted successfully', false);
+          loadDashboard();
+        } else {
+          showToast('Failed to delete anime series', true);
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Failed to delete anime series', true);
+      }
+    }
+
+    // Show Toast
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      
+      toastMessage.textContent = message;
+      toast.className = isError ? 'toast show error' : 'toast show';
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Close modals on outside click
+    window.addEventListener('click', (e) => {
+      if (e.target.id === 'addAnimeModal') {
+        closeAddAnimeModal();
+      }
+      if (e.target.id === 'uploadEpisodeModal') {
+        closeUploadEpisodeModal();
+      }
+    });
+
+    // Load dashboard on page load
+    loadDashboard();
+  </script>
+</body>
+</html>

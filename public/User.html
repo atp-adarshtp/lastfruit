@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Piece - Watch Episodes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #ff6b35;
+      --primary-dark: #e85d26;
+      --secondary: #1a1f2e;
+      --dark: #0f172a;
+      --darker: #0a0f1d;
+      --card: #1e293b;
+      --card-hover: #273548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #fbbf24;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--darker);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: var(--dark);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-content {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-brand i {
+      font-size: 1.75rem;
+      color: var(--primary);
+    }
+
+    .nav-brand h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--card);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(26, 31, 46, 0.8) 100%);
+      padding: 4rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--text), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 1rem 3rem 1rem 1.5rem;
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+    }
+
+    .search-box i {
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    .video-count {
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    /* Video Grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .video-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .video-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(255, 107, 53, 0.3);
+      border-color: var(--primary);
+    }
+
+    .video-thumbnail {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: var(--darker);
+      overflow: hidden;
+    }
+
+    .video-thumbnail video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-btn {
+      width: 80px;
+      height: 80px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .video-card:hover .play-btn {
+      transform: scale(1.1);
+    }
+
+    .video-duration {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .video-info {
+      padding: 1.5rem;
+    }
+
+    .video-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .video-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .video-meta-item i {
+      color: var(--primary);
+    }
+
+    /* Video Player Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 1200px;
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      background: var(--secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .close-btn:hover {
+      color: var(--primary);
+      background: var(--card);
+    }
+
+    .modal-body {
+      padding: 0;
+    }
+
+    .modal-body video {
+      width: 100%;
+      max-height: 70vh;
+      background: black;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      text-align: center;
+      padding: 4rem;
+    }
+
+    .spinner i {
+      font-size: 3rem;
+      color: var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner p {
+      margin-top: 1rem;
+      color: var(--text-muted);
+      font-size: 1.125rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+    }
+
+    .empty-state i {
+      font-size: 6rem;
+      color: var(--primary);
+      opacity: 0.3;
+      margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      font-size: 1.125rem;
+    }
+
+    /* Featured Section */
+    .featured-video {
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, var(--card) 0%, var(--secondary) 100%);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid var(--primary);
+      box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2);
+    }
+
+    .featured-content {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 0;
+    }
+
+    .featured-player {
+      aspect-ratio: 16/9;
+      background: var(--darker);
+    }
+
+    .featured-player video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .featured-info {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .featured-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      width: fit-content;
+    }
+
+    .featured-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .featured-description {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .watch-btn {
+      padding: 1rem 2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.125rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: fit-content;
+    }
+
+    .watch-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+    }
+
+    /* Episode List Styles */
+    .episode-list-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .episode-item {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .episode-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+      border-color: var(--primary);
+    }
+
+    .episode-thumbnail {
+      position: relative;
+      aspect-ratio: 16/9;
+      background: var(--darker);
+    }
+
+    .episode-thumbnail video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .episode-play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .episode-item:hover .episode-play-overlay {
+      opacity: 1;
+    }
+
+    .episode-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .episode-info {
+      padding: 1.25rem;
+    }
+
+    .episode-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .episode-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .featured-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .hero h2 {
+        font-size: 2rem;
+      }
+
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <a href="#" class="nav-brand">
+        <i class="fas fa-skull-crossbones"></i>
+        <h1>ONE PIECE</h1>
+      </a>
+      <div class="nav-links">
+        <a href="#" class="nav-link" onclick="showHome()">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="#anime" class="nav-link" onclick="showAnimeList()">
+          <i class="fas fa-tv"></i> Anime Series
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="heroSection">
+    <div class="hero-content">
+      <h2>Watch Your Favorite Anime</h2>
+      <p>Stream episodes in HD quality</p>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search anime or episodes...">
+        <i class="fas fa-search"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    
+    <!-- Home View -->
+    <div id="homeView">
+      <!-- Featured Anime Section -->
+      <div id="featuredSection"></div>
+
+      <!-- All Anime Series -->
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-tv"></i>
+          Anime Series
+        </h2>
+        <span class="video-count" id="animeCount">Loading...</span>
+      </div>
+
+      <!-- Anime Grid -->
+      <div class="video-grid" id="animeGrid"></div>
+    </div>
+
+    <!-- Anime Detail View -->
+    <div id="animeDetailView" style="display: none;">
+      <button class="btn btn-primary" onclick="showHome()" style="margin-bottom: 2rem;">
+        <i class="fas fa-arrow-left"></i> Back to All Anime
+      </button>
+      
+      <div id="animeDetailHeader"></div>
+      
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-list"></i>
+          Episodes
+        </h2>
+        <span class="video-count" id="episodeCount">0 episodes</span>
+      </div>
+
+      <!-- Episode List -->
+      <div id="episodeList"></div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="spinner" id="spinner">
+      <i class="fas fa-spinner"></i>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <i class="fas fa-tv"></i>
+      <h3>No Anime Available</h3>
+      <p>Check back later for new series!</p>
+    </div>
+  </div>
+
+  <!-- Video Player Modal -->
+  <div class="modal" id="videoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Episode Title</h3>
+        <button class="close-btn" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <video id="modalVideo" controls></video>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5000';
+    const spinner = document.getElementById('spinner');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const modalTitle = document.getElementById('modalTitle');
+    const featuredSection = document.getElementById('featuredSection');
+    const animeCount = document.getElementById('animeCount');
+    const homeView = document.getElementById('homeView');
+    const animeDetailView = document.getElementById('animeDetailView');
+    const animeGrid = document.getElementById('animeGrid');
+    const episodeList = document.getElementById('episodeList');
+    const episodeCount = document.getElementById('episodeCount');
+    const animeDetailHeader = document.getElementById('animeDetailHeader');
+    const heroSection = document.getElementById('heroSection');
+
+    let allAnime = [];
+    let allEpisodes = [];
+    let currentAnimeId = null;
+
+    // Load Dashboard
+    async function loadDashboard() {
+      spinner.style.display = 'block';
+      homeView.style.display = 'none';
+      animeDetailView.style.display = 'none';
+      emptyState.style.display = 'none';
+      featuredSection.innerHTML = '';
+      animeGrid.innerHTML = '';
+
+      try {
+        // Load anime series
+        const animeRes = await fetch(`${API_BASE}/api/anime`);
+        allAnime = await animeRes.json();
+
+        // Load all episodes
+        const episodesRes = await fetch(`${API_BASE}/api/episodes`);
+        allEpisodes = await episodesRes.json();
+
+        spinner.style.display = 'none';
+
+        if (allAnime.length === 0) {
+          emptyState.style.display = 'block';
+          animeCount.textContent = '0 series';
+        } else {
+          animeCount.textContent = `${allAnime.length} series`;
+          showHome();
+        }
+      } catch (error) {
+        console.error('Load error:', error);
+        spinner.style.display = 'none';
+        emptyState.style.display = 'block';
+        animeCount.textContent = '0 series';
+      }
+    }
+
+    // Show Home View
+    function showHome() {
+      homeView.style.display = 'block';
+      animeDetailView.style.display = 'none';
+      heroSection.style.display = 'block';
+      currentAnimeId = null;
+      displayAnimeGrid();
+    }
+
+    // Show Anime List (same as home)
+    function showAnimeList() {
+      showHome();
+    }
+
+    // Display Anime Grid
+    function displayAnimeGrid() {
+      animeGrid.innerHTML = '';
+
+      allAnime.forEach(anime => {
+        const episodes = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id);
+        const card = createAnimeCard(anime, episodes);
+        animeGrid.appendChild(card);
+      });
+
+      // Show featured if we have anime
+      if (allAnime.length > 0 && allEpisodes.length > 0) {
+        const latestEpisode = allEpisodes.sort((a, b) => 
+          new Date(b.uploadedAt) - new Date(a.uploadedAt)
+        )[0];
+        const featuredAnime = allAnime.find(a => a._id === latestEpisode.animeId._id || a._id === latestEpisode.animeId);
+        if (featuredAnime) {
+          showFeaturedAnime(featuredAnime, latestEpisode);
+        }
+      }
+    }
+
+    // Show Featured Anime
+    function showFeaturedAnime(anime, latestEpisode) {
+      const episodeCount = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id).length;
+      
+      featuredSection.innerHTML = `
+        <div class="featured-video">
+          <div class="featured-content">
+            <div class="featured-player">
+              <video src="${API_BASE}/video/${latestEpisode.filename}" controls preload="metadata"></video>
+            </div>
+            <div class="featured-info">
+              <div class="featured-badge">
+                <i class="fas fa-star"></i>
+                Featured: ${anime.title}
+              </div>
+              <h3 class="featured-title">Latest: Episode ${latestEpisode.episodeNumber}</h3>
+              <p class="featured-description">
+                ${anime.description || 'Watch the latest episode now!'}
+              </p>
+              <div style="margin-bottom: 1rem; color: var(--text-muted);">
+                <i class="fas fa-film"></i> ${episodeCount} Episodes Available
+              </div>
+              <button class="watch-btn" onclick="viewAnimeDetail('${anime._id}')">
+                <i class="fas fa-play"></i>
+                Watch Now
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Create Anime Card
+    function createAnimeCard(anime, episodes) {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.onclick = () => viewAnimeDetail(anime._id);
+
+      const latestEpisode = episodes.sort((a, b) => b.episodeNumber - a.episodeNumber)[0];
+
+      card.innerHTML = `
+        <div class="video-thumbnail">
+          ${latestEpisode ? 
+            `<video src="${API_BASE}/video/${latestEpisode.filename}" preload="metadata"></video>` :
+            '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 4rem; color: var(--primary);"><i class="fas fa-tv"></i></div>'
+          }
+          <div class="play-overlay">
+            <div class="play-btn">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          ${episodes.length > 0 ? `<div class="video-duration">${episodes.length} EP</div>` : ''}
+        </div>
+        <div class="video-info">
+          <div class="video-title">${anime.title}</div>
+          <div class="video-meta">
+            <div class="video-meta-item">
+              <i class="fas fa-film"></i>
+              <span>${episodes.length} Episodes</span>
+            </div>
+            <div class="video-meta-item">
+              <i class="fas fa-clock"></i>
+              <span>${episodes.length > 0 ? 'Updated' : 'New'}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // View Anime Detail
+    async function viewAnimeDetail(animeId) {
+      currentAnimeId = animeId;
+      homeView.style.display = 'none';
+      animeDetailView.style.display = 'block';
+      heroSection.style.display = 'none';
+      episodeList.innerHTML = '';
+      spinner.style.display = 'block';
+
+      try {
+        const anime = allAnime.find(a => a._id === animeId);
+        const episodes = allEpisodes.filter(ep => ep.animeId._id === animeId || ep.animeId === animeId)
+          .sort((a, b) => a.episodeNumber - b.episodeNumber);
+
+        spinner.style.display = 'none';
+
+        // Show anime header
+        animeDetailHeader.innerHTML = `
+          <div class="featured-video" style="margin-bottom: 2rem;">
+            <div class="featured-content">
+              <div class="featured-player">
+                ${episodes.length > 0 ? 
+                  `<video src="${API_BASE}/video/${episodes[0].filename}" controls preload="metadata"></video>` :
+                  '<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 5rem; color: var(--primary);"><i class="fas fa-tv"></i></div>'
+                }
+              </div>
+              <div class="featured-info">
+                <h3 class="featured-title">${anime.title}</h3>
+                ${anime.description ? `<p class="featured-description">${anime.description}</p>` : ''}
+                <div style="margin-bottom: 1rem; color: var(--text-muted);">
+                  <i class="fas fa-film"></i> ${episodes.length} Episodes Available
+                </div>
+                ${episodes.length > 0 ? `
+                  <button class="watch-btn" onclick="openModal('${episodes[0].filename}', '${anime.title} - Episode ${episodes[0].episodeNumber}')">
+                    <i class="fas fa-play"></i>
+                    Start Watching
+                  </button>
+                ` : '<p style="color: var(--text-muted);">No episodes available yet</p>'}
+              </div>
+            </div>
+          </div>
+        `;
+
+        episodeCount.textContent = `${episodes.length} episodes`;
+
+        // Display episodes
+        if (episodes.length === 0) {
+          episodeList.innerHTML = '<div class="empty-state"><i class="fas fa-film"></i><h3>No Episodes Yet</h3></div>';
+        } else {
+          episodeList.className = 'episode-list-container';
+          episodes.forEach(episode => {
+            const episodeCard = createEpisodeCard(episode, anime.title);
+            episodeList.appendChild(episodeCard);
+          });
+        }
+      } catch (error) {
+        console.error('Load error:', error);
+        spinner.style.display = 'none';
+        episodeList.innerHTML = '<div class="empty-state"><h3>Error loading episodes</h3></div>';
+      }
+    }
+
+    // Create Episode Card
+    function createEpisodeCard(episode, animeTitle) {
+      const card = document.createElement('div');
+      card.className = 'episode-item';
+
+      const sizeMB = (episode.size / (1024 * 1024)).toFixed(2);
+      const uploadDate = new Date(episode.uploadedAt).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+
+      card.innerHTML = `
+        <div class="episode-thumbnail">
+          <video src="${API_BASE}/video/${episode.filename}" preload="metadata"></video>
+          <div class="episode-play-overlay">
+            <div class="play-btn">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <div class="episode-badge">EP ${episode.episodeNumber}</div>
+        </div>
+        <div class="episode-info">
+          <div class="episode-title">${episode.title}</div>
+          <div class="episode-meta">
+            <span><i class="fas fa-hdd"></i> ${sizeMB} MB</span>
+            <span><i class="fas fa-calendar"></i> ${uploadDate}</span>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener('click', () => {
+        openModal(episode.filename, `${animeTitle} - Episode ${episode.episodeNumber}: ${episode.title}`);
+      });
+
+      return card;
+    }
+
+    // Open Modal
+    function openModal(filename, title) {
+      modalTitle.textContent = title;
+      modalVideo.src = `${API_BASE}/video/${filename}`;
+      videoModal.classList.add('active');
+      modalVideo.play();
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close Modal
+    function closeModal() {
+      videoModal.classList.remove('active');
+      modalVideo.pause();
+      modalVideo.src = '';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal on outside click
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) {
+        closeModal();
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && videoModal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Search functionality
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      
+      if (searchTerm === '') {
+        if (currentAnimeId) {
+          viewAnimeDetail(currentAnimeId);
+        } else {
+          displayAnimeGrid();
+        }
+      } else {
+        // Search in both anime titles and episode titles
+        const filteredAnime = allAnime.filter(anime => 
+          anime.title.toLowerCase().includes(searchTerm)
+        );
+        
+        const filteredEpisodes = allEpisodes.filter(episode => 
+          episode.title.toLowerCase().includes(searchTerm)
+        );
+
+        if (currentAnimeId) {
+          // If viewing specific anime, filter episodes
+          const filtered = filteredEpisodes.filter(ep => 
+            ep.animeId._id === currentAnimeId || ep.animeId === currentAnimeId
+          );
+          episodeList.innerHTML = '';
+          if (filtered.length === 0) {
+            episodeList.innerHTML = '<div class="empty-state"><h3>No episodes found</h3></div>';
+          } else {
+            episodeList.className = 'episode-list-container';
+            const anime = allAnime.find(a => a._id === currentAnimeId);
+            filtered.forEach(episode => {
+              const episodeCard = createEpisodeCard(episode, anime.title);
+              episodeList.appendChild(episodeCard);
+            });
+          }
+        } else {
+          // Show filtered anime
+          animeGrid.innerHTML = '';
+          filteredAnime.forEach(anime => {
+            const episodes = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id);
+            const card = createAnimeCard(anime, episodes);
+            animeGrid.appendChild(card);
+          });
+        }
+      }
+    });
+
+    // Load dashboard on page load
+    loadDashboard();
+  </script>
+</body>
+</html>
