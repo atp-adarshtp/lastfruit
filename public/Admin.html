@@ -897,7 +897,10 @@
       animeList.innerHTML = '';
 
       allAnime.forEach(anime => {
-        const episodes = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id);
+        const episodes = allEpisodes.filter(ep => {
+          if (!ep.animeId) return false;
+          return ep.animeId._id === anime._id || ep.animeId === anime._id;
+        });
         const animeCard = createAnimeCard(anime, episodes);
         animeList.appendChild(animeCard);
       });
