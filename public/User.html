@@ -855,7 +855,10 @@
       animeGrid.innerHTML = '';
 
       allAnime.forEach(anime => {
-        const episodes = allEpisodes.filter(ep => ep.animeId._id === anime._id || ep.animeId === anime._id);
+        const episodes = allEpisodes.filter(ep => {
+          if (!ep.animeId) return false;
+          return ep.animeId._id === anime._id || ep.animeId === anime._id;
+        });
         const card = createAnimeCard(anime, episodes);
         animeGrid.appendChild(card);
       });
@@ -865,7 +868,10 @@
         const latestEpisode = allEpisodes.sort((a, b) => 
           new Date(b.uploadedAt) - new Date(a.uploadedAt)
         )[0];
-        const featuredAnime = allAnime.find(a => a._id === latestEpisode.animeId._id || a._id === latestEpisode.animeId);
+        const featuredAnime = allAnime.find(a => {
+          if (!latestEpisode.animeId) return false;
+          return a._id === latestEpisode.animeId._id || a._id === latestEpisode.animeId;
+        });
         if (featuredAnime) {
           showFeaturedAnime(featuredAnime, latestEpisode);
         }
