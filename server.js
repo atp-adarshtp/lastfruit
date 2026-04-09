@@ -92,6 +92,29 @@ app.post('/api/upload', upload.single('video'), async (req, res) => {
     }
 
     try {
+        // Validate inputs early (and avoid writing to GridFS if request will fail)
+        if (!ObjectId.isValid(animeId)) {
+            return res.status(400).json({ message: 'Invalid animeId' });
+        }
+
+        const epNum = parseInt(episodeNumber, 10);
+        if (!Number.isFinite(epNum) || epNum <= 0) {
+            return res.status(400).json({ message: 'episodeNumber must be a positive integer' });
+        }
+
+        const animeExists = await Anime.exists({ _id: animeId });
+        if (!animeExists) {
+            return res.status(404).json({ message: 'Anime not found' });
+        }
+
+        const alreadyExists = await Episode.exists({ animeId, episodeNumber: epNum });
+        if (alreadyExists) {
+            return res.status(409).json({
+                message: `Episode ${epNum} already exists for this anime`,
+                conflict: { animeId, episodeNumber: epNum }
+            });
+        }
+
         const uploadStream = gfsBucket.openUploadStream(req.file.originalname, {
             contentType: req.file.mimetype,
         });
@@ -110,7 +133,7 @@ app.post('/api/upload', upload.single('video'), async (req, res) => {
                 // Create episode record
                 const episode = new Episode({
                     animeId,
-                    episodeNumber: parseInt(episodeNumber),
+                    episodeNumber: epNum,
                     title,
                     filename: file.filename,
                     fileId: file._id.toString(),
@@ -126,7 +149,28 @@ app.post('/api/upload', upload.single('video'), async (req, res) => {
                 });
             } catch (error) {
                 console.error('Episode Save Error:', error);
-                res.status(500).json({ message: 'Error saving episode' });
+
+                // If we uploaded the file but couldn't create DB record, avoid orphaned files.
+                // Duplicate-key is the common case here (animeId + episodeNumber unique index).
+                try {
+                    const fileId = error && error.code === 11000 ? (error.keyValue && error.keyValue.fileId) : null;
+                    // We have the file from above; prefer deleting that exact file.
+                    const files = await gfsBucket.find({ filename: req.file.originalname }).toArray();
+                    if (files && files[0] && files[0]._id) {
+                        await gfsBucket.delete(new ObjectId(files[0]._id));
+                    }
+                } catch (cleanupErr) {
+                    console.error('Cleanup Error:', cleanupErr);
+                }
+
+                if (error && error.code === 11000) {
+                    return res.status(409).json({
+                        message: 'Duplicate episode number for this anime',
+                        conflict: error.keyValue || { animeId, episodeNumber: epNum }
+                    });
+                }
+
+                return res.status(500).json({ message: 'Error saving episode' });
             }
         });
 
