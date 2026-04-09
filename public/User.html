@@ -397,6 +397,39 @@
       background: black;
     }
 
+    .video-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--secondary);
+    }
+
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .control-btn i {
+      font-size: 1.25rem;
+    }
+
     /* Loading Spinner */
     .spinner {
       text-align: center;
@@ -732,12 +765,22 @@
       </div>
       <div class="modal-body">
         <video id="modalVideo" controls></video>
+        <div class="video-controls">
+          <button class="control-btn" onclick="skipBackward()">
+            <i class="fas fa-undo"></i>
+            <span>10s</span>
+          </button>
+          <button class="control-btn" onclick="skipForward()">
+            <i class="fas fa-redo"></i>
+            <span>10s</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:5000';
+    const API_BASE = 'http://10.9.9.28:5000';
     const spinner = document.getElementById('spinner');
     const emptyState = document.getElementById('emptyState');
     const searchInput = document.getElementById('searchInput');
@@ -1015,6 +1058,30 @@
       modalVideo.pause();
       modalVideo.src = '';
       document.body.style.overflow = 'auto';
+    }
+
+    // Skip Backward 10 seconds
+    function skipBackward() {
+      console.log('=== SKIP BACKWARD ===');
+      if (modalVideo) {
+        console.log('Before:', modalVideo.currentTime);
+        const newTime = Math.max(0, modalVideo.currentTime - 10);
+        modalVideo.currentTime = newTime;
+        console.log('After:', modalVideo.currentTime);
+      }
+    }
+
+    // Skip Forward 10 seconds
+    function skipForward() {
+      console.log('=== SKIP FORWARD ===');
+      if (modalVideo) {
+        console.log('Before:', modalVideo.currentTime);
+        const duration = modalVideo.duration || 0;
+        const newTime = Math.min(duration, modalVideo.currentTime + 10);
+        console.log('Calculated new time:', newTime);
+        modalVideo.currentTime = newTime;
+        console.log('After:', modalVideo.currentTime);
+      }
     }
 
     // Close modal on outside click

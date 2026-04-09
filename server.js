@@ -25,6 +25,11 @@ app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'Admin.html'));
 });
 
+// Favicon route - prevent 404
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end();
+});
+
 // Database Connection
 const mongoURI = 'mongodb://127.0.0.1:27017/OnePiece'; // Change 'one piece' if you want
 mongoose.connect(mongoURI);
@@ -160,7 +165,7 @@ app.get('/api/episodes', async (req, res) => {
     }
 });
 
-// API: Stream Video by Filename
+// API: Stream Video by Filename with range support
 app.get('/video/:filename', async (req, res) => {
     try {
         const file = await gfsBucket.find({ filename: req.params.filename }).toArray();
@@ -168,9 +173,37 @@ app.get('/video/:filename', async (req, res) => {
             return res.status(404).send('Video not found');
         }
 
-        const downloadStream = gfsBucket.openDownloadStreamByName(req.params.filename);
-        res.set('Content-Type', file[0].contentType);
-        downloadStream.pipe(res);
+        const fileSize = file[0].length;
+        const range = req.headers.range;
+
+        if (range) {
+            // Parse range request
+            const parts = range.replace(/bytes=/, '').split('-');
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunkSize = (end - start) + 1;
+
+            // Set headers for range request
+            res.writeHead(206, {
+                'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunkSize,
+                'Content-Type': file[0].contentType,
+            });
+
+            // Stream the requested range
+            const downloadStream = gfsBucket.openDownloadStreamByName(req.params.filename, { start, end: end + 1 });
+            downloadStream.pipe(res);
+        } else {
+            // No range, stream entire file
+            res.writeHead(200, {
+                'Content-Length': fileSize,
+                'Content-Type': file[0].contentType,
+                'Accept-Ranges': 'bytes',
+            });
+            const downloadStream = gfsBucket.openDownloadStreamByName(req.params.filename);
+            downloadStream.pipe(res);
+        }
 
     } catch (error) {
         console.error('Stream Error:', error);
@@ -291,5 +324,5 @@ app.delete('/delete/:id', async (req, res) => {
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Server running at http://10.9.9.28:${PORT}`);
 });
